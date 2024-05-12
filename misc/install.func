@@ -90,15 +90,15 @@ setting_up_container() {
   locale-gen >/dev/null
   echo $tz >/etc/timezone
   ln -sf /usr/share/zoneinfo/$tz /etc/localtime
-  for ((i = RETRY_NUM; i > 0; i--)); do
+  for ((i = 100; i > 0; i--)); do
     if [ "$(hostname -I)" != "" ]; then
       break
     fi
     echo 1>&2 -en "${CROSS}${RD} No Network! "
-    sleep $RETRY_EVERY
+    sleep 60
   done
   if [ "$(hostname -I)" = "" ]; then
-    echo 1>&2 -e "\n${CROSS}${RD} No Network After $RETRY_NUM Tries${CL}"
+    echo 1>&2 -e "\n${CROSS}${RD} No Network After 100 Tries${CL}"
     echo -e " 🖧  Check Network Settings"
     exit 1
   fi
