@@ -7,7 +7,7 @@ color() {
   GN=$(echo "\033[1;92m")
   DGN=$(echo "\033[32m")
   CL=$(echo "\033[m")
-  RETRY_NUM=10
+  RETRY_NUM=100
   RETRY_EVERY=60
   CM="${GN}✓${CL}"
   CROSS="${RD}✗${CL}"
