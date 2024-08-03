@@ -15,6 +15,11 @@
 
 ---
 
+> MODIFIED SCRIPT
+The scripts have been modified to fit my (horrible) network configurations including longer delays.
+It also has some custom MAC addresses and configs set up to use within my home lab.
+
+
 > [!WARNING]
 Be cautious of copycat or coat-tailing sites that exploit the project's popularity with potentially malicious intent. Please only trust information from https://Helper-Scripts.com/ or https://tteck.github.io/Proxmox/.
 
