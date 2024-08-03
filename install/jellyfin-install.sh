@@ -31,6 +31,13 @@ if [[ "$CTTYPE" == "0" ]]; then
 fi
 msg_ok "Set Up Hardware Acceleration"
 
+msg_info "Setting up ARR User/Group"
+$STD groupadd -g 6553 Servarr
+$STD useradd -u 5400 -g 6553 -s /sbin/nologin -M jellyfin
+$STD adduser jellyfin video
+$STD adduser jellyfin render
+msg_ok "Finished setting up ARR User/Group"
+
 msg_info "Installing Jellyfin"
 VERSION="$( awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release )"
 # If the keyring directory is absent, create it

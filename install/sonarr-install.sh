@@ -20,6 +20,11 @@ $STD apt-get install -y mc
 $STD apt-get install -y sqlite3
 msg_ok "Installed Dependencies"
 
+msg_info "Setting up ARR User/Group"
+$STD groupadd -g 6553 Servarr
+$STD useradd -u 5404 -g 6553 -s /sbin/nologin -M sonarr
+msg_ok "Finished setting up ARR User/Group"
+
 msg_info "Installing Sonarr v4"
 mkdir -p /var/lib/sonarr/
 chmod 775 /var/lib/sonarr/
@@ -27,7 +32,8 @@ wget -q -O SonarrV4.tar.gz 'https://services.sonarr.tv/v1/download/main/latest?v
 tar -xzf SonarrV4.tar.gz
 mv Sonarr /opt
 rm -rf SonarrV4.tar.gz
-
+chown sonarr:Servarr /var/lib/sonarr/
+chown sonarr:Servarr /opt/Sonarr
 msg_ok "Installed Sonarr v4"
 
 msg_info "Creating Service"
@@ -36,6 +42,8 @@ cat <<EOF >/etc/systemd/system/sonarr.service
 Description=Sonarr Daemon
 After=syslog.target network.target
 [Service]
+User=sonarr
+Group=Servarr
 Type=simple
 ExecStart=/opt/Sonarr/Sonarr -nobrowser -data=/var/lib/sonarr/
 TimeoutStopSec=20

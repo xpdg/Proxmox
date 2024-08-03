@@ -22,6 +22,11 @@ $STD apt-get install -y ca-certificates
 $STD apt-get install -y gnupg
 msg_ok "Installed Dependencies"
 
+msg_info "Setting up ARR User/Group"
+$STD groupadd -g 6553 Servarr
+$STD useradd -u 5402 -g 6553 -s /sbin/nologin -M jellyseer
+msg_ok "Finished setting up ARR User/Group"
+
 msg_info "Setting up Node.js Repository"
 mkdir -p /etc/apt/keyrings
 curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
@@ -50,6 +55,8 @@ PORT=5055
 # HOST=0.0.0.0
 # JELLYFIN_TYPE=emby
 EOF
+chown jellyseer:Servarr /etc/jellyseerr/
+chown jellyseer:Servarr /opt/jellyseerr
 msg_ok "Installed Jellyseerr"
 
 msg_info "Creating Service"
@@ -59,6 +66,8 @@ Description=jellyseerr Service
 After=network.target
 
 [Service]
+User=jellyseer
+Group=Servarr
 EnvironmentFile=/etc/jellyseerr/jellyseerr.conf
 Environment=NODE_ENV=production
 Type=exec

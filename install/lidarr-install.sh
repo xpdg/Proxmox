@@ -22,6 +22,12 @@ $STD apt-get install -y libchromaprint-tools
 $STD apt-get install -y mediainfo
 msg_ok "Installed Dependencies"
 
+msg_info "Setting up ARR User/Group"
+$STD groupadd -g 6553 Servarr
+$STD useradd -u 5407 -g 6553 -s /sbin/nologin lidarr
+msg_ok "Finished setting up ARR User/Group"
+
+
 msg_info "Installing Lidarr"
 mkdir -p /var/lib/lidarr/
 chmod 775 /var/lib/lidarr/
@@ -29,7 +35,11 @@ $STD wget --content-disposition 'https://lidarr.servarr.com/v1/update/master/upd
 $STD tar -xvzf Lidarr.master.*.tar.gz
 mv Lidarr /opt
 chmod 775 /opt/Lidarr
+chown lidarr:Servarr /var/lib/lidarr/
+chown lidarr:Servarr /opt/Lidarr
 msg_ok "Installed Lidarr"
+
+
 
 msg_info "Creating Service"
 cat <<EOF >/etc/systemd/system/lidarr.service
@@ -37,6 +47,8 @@ cat <<EOF >/etc/systemd/system/lidarr.service
 Description=Lidarr Daemon
 After=syslog.target network.target
 [Service]
+User=lidarr
+Group=Servarr
 UMask=0002
 Type=simple
 ExecStart=/opt/Lidarr/Lidarr -nobrowser -data=/var/lib/lidarr/

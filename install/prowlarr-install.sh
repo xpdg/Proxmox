@@ -20,6 +20,11 @@ $STD apt-get install -y mc
 $STD apt-get install -y sqlite3
 msg_ok "Installed Dependencies"
 
+msg_info "Setting up ARR User/Group"
+$STD groupadd -g 6553 Servarr
+$STD useradd -u 5403 -g 6553 -s /sbin/nologin -M prowlarr
+msg_ok "Finished setting up ARR User/Group"
+
 msg_info "Installing Prowlarr"
 mkdir -p /var/lib/prowlarr/
 chmod 775 /var/lib/prowlarr/
@@ -27,6 +32,8 @@ $STD wget --content-disposition 'https://prowlarr.servarr.com/v1/update/master/u
 $STD tar -xvzf Prowlarr.master.*.tar.gz
 mv Prowlarr /opt
 chmod 775 /opt/Prowlarr
+chown prowlarr:Servarr /var/lib/prowlarr/
+chown prowlarr:Servarr /opt/Prowlarr
 msg_ok "Installed Prowlarr"
 
 msg_info "Creating Service"
@@ -35,6 +42,8 @@ cat <<EOF >/etc/systemd/system/prowlarr.service
 Description=Prowlarr Daemon
 After=syslog.target network.target
 [Service]
+User=prowlarr
+Group=Servarr
 UMask=0002
 Type=simple
 ExecStart=/opt/Prowlarr/Prowlarr -nobrowser -data=/var/lib/prowlarr/

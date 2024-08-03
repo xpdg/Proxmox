@@ -31,6 +31,14 @@ if [[ "$CTTYPE" == "0" ]]; then
 fi
 msg_ok "Set Up Hardware Acceleration"
 
+msg_info "Setting up ARR User/Group"
+$STD groupadd -g 6553 Servarr
+$STD useradd -u 5409 -g 6553 -s /sbin/nologin -M tdarr
+$STD adduser tdarr render
+$STD adduser tdarr video
+msg_ok "Finished setting up ARR User/Group"
+
+
 msg_info "Installing Tdarr"
 mkdir -p /opt/tdarr
 cd /opt/tdarr
@@ -57,8 +65,8 @@ After=network.target
 #Requires=zfs-mount.service
 
 [Service]
-User=root
-Group=root
+User=tdarr
+Group=Servarr
 
 Type=simple
 WorkingDirectory=/opt/tdarr/Tdarr_Server
@@ -78,8 +86,8 @@ After=network.target
 Requires=tdarr-server.service
 
 [Service]
-User=root
-Group=root
+User=tdarr
+Group=Servarr
 
 Type=simple
 WorkingDirectory=/opt/tdarr/Tdarr_Node

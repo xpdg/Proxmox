@@ -19,6 +19,11 @@ $STD apt-get install -y sudo
 $STD apt-get install -y mc
 msg_ok "Installed Dependencies"
 
+msg_info "Setting up ARR User/Group"
+$STD groupadd -g 6553 Servarr
+$STD useradd -u 5408 -g 6553 -s /sbin/nologin bazarr
+msg_ok "Finished setting up ARR User/Group"
+
 msg_info "Updating Python3"
 $STD apt-get install -y \
   python3 \
@@ -33,6 +38,8 @@ wget -q https://github.com/morpheus65535/bazarr/releases/latest/download/bazarr.
 unzip -qq bazarr -d /opt/bazarr
 chmod 775 /opt/bazarr /var/lib/bazarr/
 python3 -m pip install -q -r /opt/bazarr/requirements.txt
+chown bazarr:Servarr /var/lib/bazarr
+chown bazarr:Servarr /opt/bazarr
 msg_ok "Installed Bazarr"
 
 msg_info "Creating Service"
@@ -42,6 +49,8 @@ Description=Bazarr Daemon
 After=syslog.target network.target
 
 [Service]
+User=bazarr
+Group=Servarr
 WorkingDirectory=/opt/bazarr/
 UMask=0002
 Restart=on-failure

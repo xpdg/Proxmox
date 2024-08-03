@@ -20,6 +20,11 @@ $STD apt-get install -y mc
 $STD apt-get install -y sqlite3
 msg_ok "Installed Dependencies"
 
+msg_info "Setting up ARR User/Group"
+$STD groupadd -g 6553 Servarr
+$STD useradd -u 5405 -g 6553 -s /sbin/nologin -M radarr
+msg_ok "Finished setting up ARR User/Group"
+
 msg_info "Installing Radarr"
 mkdir -p /var/lib/radarr/
 chmod 775 /var/lib/radarr/
@@ -27,6 +32,8 @@ $STD wget --content-disposition 'https://radarr.servarr.com/v1/update/master/upd
 $STD tar -xvzf Radarr.master.*.tar.gz
 mv Radarr /opt
 chmod 775 /opt/Radarr
+chown radarr:Servarr /var/lib/radarr/
+chown radarr:Servarr /opt/Radarr
 msg_ok "Installed Radarr"
 
 msg_info "Creating Service"
@@ -35,6 +42,8 @@ cat <<EOF >/etc/systemd/system/radarr.service
 Description=Radarr Daemon
 After=syslog.target network.target
 [Service]
+User=radarr
+Group=Servarr
 UMask=0002
 Type=simple
 ExecStart=/opt/Radarr/Radarr -nobrowser -data=/var/lib/radarr/

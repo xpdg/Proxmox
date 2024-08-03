@@ -19,6 +19,11 @@ $STD apt-get install -y sudo
 $STD apt-get install -y mc
 msg_ok "Installed Dependencies"
 
+msg_info "Setting up ARR User/Group"
+$STD groupadd -g 6553 Servarr
+$STD useradd -u 5401 -g 6553 -s /sbin/nologin -M qbittorrent
+msg_ok "Finished setting up ARR User/Group"
+
 msg_info "Installing qbittorrent-nox"
 $STD apt-get install -y qbittorrent-nox
 mkdir -p /.config/qBittorrent/
@@ -29,6 +34,7 @@ WebUI\Port=8090
 WebUI\UseUPnP=false
 WebUI\Username=admin
 EOF
+chown qbittorrent:Servarr /.config/qBittorrent/
 msg_ok "qbittorrent-nox"
 
 msg_info "Creating Service"
@@ -37,6 +43,8 @@ cat <<EOF >/etc/systemd/system/qbittorrent-nox.service
 Description=qBittorrent client
 After=network.target
 [Service]
+User=qbittorrent
+Group=Servarr
 ExecStart=/usr/bin/qbittorrent-nox --webui-port=8090
 Restart=always
 [Install]

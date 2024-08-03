@@ -20,6 +20,11 @@ $STD apt-get install -y mc
 $STD apt-get install -y sqlite3
 msg_ok "Installed Dependencies"
 
+msg_info "Setting up ARR User/Group"
+$STD groupadd -g 6553 Servarr
+$STD useradd -u 5406 -g 6553 -s /sbin/nologin -M readarr
+msg_ok "Finished setting up ARR User/Group"
+
 msg_info "Installing Readarr"
 mkdir -p /var/lib/readarr/
 chmod 775 /var/lib/readarr/
@@ -27,6 +32,8 @@ $STD wget --content-disposition 'https://readarr.servarr.com/v1/update/develop/u
 $STD tar -xvzf Readarr.develop.*.tar.gz
 mv Readarr /opt
 chmod 775 /opt/Readarr
+chown readarr:Servarr /var/lib/readarr/
+chown readarr:Servarr /opt/Readarr
 msg_ok "Installed Readarr"
 
 msg_info "Creating Service"
@@ -35,6 +42,8 @@ cat <<EOF >/etc/systemd/system/readarr.service
 Description=Readarr Daemon
 After=syslog.target network.target
 [Service]
+User=readarr
+Group=Servarr
 UMask=0002
 Type=simple
 ExecStart=/opt/Readarr/Readarr -nobrowser -data=/var/lib/readarr/
